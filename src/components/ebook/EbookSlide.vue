@@ -4,8 +4,17 @@
       <transition name="slide-right">
         <div class="content" v-if="settingVisible === 3">
           <div class="content-page-wrapper">
-            <div class="content-page"></div>
-            <div class="content-page-tab"></div>
+            <div class="content-page">
+              <component :is="currentTab === 1 ? content : bookmark"></component>
+            </div>
+            <div class="content-page-tab">
+              <div class="content-page-table-item" 
+                   :class="{'selected':currentTab === 1}"
+                   @click="selectTab(1)">{{$t('book.navigation')}}</div>
+              <div class="content-page-table-item"
+                   :class="{'selected':currentTab === 2}"
+                   @click="selectTab(2)">{{$t('book.bookmark')}}</div>
+            </div>
           </div>
         </div>
       </transition>
@@ -16,8 +25,21 @@
 
 <script>
 import { ebookMixin } from '../../utils/mixin.js'
+import EbookSlideContents from './EbookSildeContents'
 export default {
   mixins:[ebookMixin],
+  data() {
+    return {
+      currentTab:1,
+      content:EbookSlideContents,
+      bookmark:null
+    }
+  },
+  methods: {
+    selectTab(tab){
+      this.currentTab = tab;
+    }
+  },
 }
 </script>
 
@@ -36,10 +58,29 @@ export default {
     width: 85%;
     height: 100%;
     .content-page-wrapper{
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
       .content-page{
-
+        flex: 1;
+        width: 100%;
+        overflow: hidden;
       }
-      .content-page-tab{}
+      .content-page-tab{
+        display: flex;
+        flex: 0 0 px2rem(48);
+        width: 100%;
+        height: px2rem(48);
+        .content-page-table-item{
+          flex: 1;
+          font-size: px2rem(12);
+          @include center;
+          &.selected {
+            text-shadow: px2rem(1) px2rem(1) px2rem(1) rgb(224, 115, 12);
+          }
+        }
+      }
     }
   }
   .content-tag{
