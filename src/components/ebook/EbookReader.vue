@@ -17,6 +17,7 @@ import {
   saveTheme,
   getLocation
 } from "../../utils/localStorage.js";
+import { flatten } from '../../utils/book.js'
 
 export default {
   mixins: [ebookMixin],
@@ -75,7 +76,6 @@ export default {
       });
       this.rendition.themes.select(defaultTheme);
     },
-    
     //表示初始化过程
     initRendition() {
       this.rendition = this.book.renderTo("read", {
@@ -132,6 +132,28 @@ export default {
         event.stopPropagation();
       });
     },
+    // 获取图片的封面链接 和 作者标题
+    parseBook(){
+      // loaded表示book的加载   cover表示封面信息
+      this.book.loaded.cover.then(cover => {
+        this.book.archive.createUrl(cover).then(url => {
+          this.setCover(url)
+        })
+      })
+      this.book.loaded.metadata.then(metadata => {
+        this.setMetadata(metadata)
+      })
+      this.book.loaded.navigation.then(nav => {
+        const navItem = flatten(nav.toc)
+        function find(item,level = 0){
+          return !item.parent ? level : find(navItem.filter(parentItem => parentItem.id === item.parent)[0],++level)
+        }
+        navItem.forEach(item => {
+          item.level = find(item)
+        })
+         this.setNavigation(navItem)
+      })
+    },
     initEpub() {
       const url =
         process.env.VUE_APP_RES_URL + "/epub/" + this.fileName + ".epub";
@@ -139,6 +161,7 @@ export default {
       this.setCurrentBook(this.book);
       this.initRendition();
       this.initGesture();
+      this.parseBook();
       this.book.ready
         .then(() => {
           return this.book.locations.generate(

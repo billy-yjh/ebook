@@ -4,7 +4,7 @@
       <div class="setting-wrapper" v-show="menuVisible && settingVisible === 2">
         <div class="setting-progress">
           <div class="read-time-wrapper">
-            <span class="read-time-text">{{getReadTimeTest()}}</span>
+            <span class="read-time-text">{{getReadTimeText()}}</span>
             <span class="icon-forward"></span>
           </div>
           <div class="progress-wrapper">
@@ -39,17 +39,18 @@
 
 <script>
 import { ebookMixin } from "../../utils/mixin.js";
-import { getReadTime } from '../../utils/localStorage.js';
+
 export default {
   mixins: [ebookMixin],
   computed: {
     getSectionName(){
-      if(this.section){
-        const sectionInfo = this.currentBook.section(this.section)
-        if(sectionInfo && sectionInfo.href){
-          return this.currentBook.navigation.get(sectionInfo.href).label
-        }
-      }
+      // if(this.section){
+      //   const sectionInfo = this.currentBook.section(this.section)
+      //   if(sectionInfo && sectionInfo.href && this.currentBook && this.currentBook.navigation){
+      //     return this.currentBook.navigation.get(sectionInfo.href).label
+      //   }
+      // }
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   methods: {
@@ -92,17 +93,6 @@ export default {
       const sectionInfo = this.currentBook.section(this.section)
       if(sectionInfo && sectionInfo.href){
         this.display(sectionInfo.href)
-      }
-    },
-    getReadTimeTest(){
-      return this.$t('book.haveRead').replace("$1",this.getReadTimeByMinute())
-    },
-    getReadTimeByMinute(){
-      const readTime = getReadTime(this.fileName)
-      if(!readTime){
-        return 0
-      }else{
-        return Math.ceil(readTime / 60)
       }
     }
   },
