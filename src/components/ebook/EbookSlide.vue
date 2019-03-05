@@ -30,6 +30,7 @@
 import { ebookMixin } from '../../utils/mixin.js'
 import EbookSlideContents from './EbookSildeContents'
 import EbookLoading from './EbookLoading'
+import EbookSLideBookmark from './EbookSlideBookmark'
 export default {
   mixins:[ebookMixin],
   components:{
@@ -39,7 +40,7 @@ export default {
     return {
       currentTab:1,
       content:EbookSlideContents,
-      bookmark:null
+      bookmark:EbookSLideBookmark
     }
   },
   methods: {
