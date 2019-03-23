@@ -4,7 +4,10 @@
     <div class="ebook-reader-mask"
          @click="onMaskClick"
          @touchmove="move"
-         @touchend="moveEnd"></div>
+         @touchend="moveEnd"
+         @mousedown.left="onMouseEnter"
+         @mousemove.left="onMouseMove"
+         @mouseup="onMouseEnd"></div>
   </div>
 </template>
 
@@ -173,11 +176,38 @@ export default {
           );
         })
         .then(locations => {
+          this.navigation.forEach(nav => {
+            nav.pagelist = []
+          })
+          locations.forEach(item => {
+            const loc = item.match(/\[(.*)\]!/)[1]
+            this.navigation.forEach(nav => {
+              if(nav.href){
+                const href = nav.href.match(/^(.*)\.html$/)[1]
+                if(href === loc){
+                  nav.pagelist.push(item)
+                }
+              }
+            })
+            let currentPage = 1
+            this.navigation.forEach((nav,index) => {
+              if(index === 0){
+                nav.page = 1
+              }else{
+                nav.page = currentPage
+              }
+              currentPage += nav.pagelist.length
+            })
+          })
+          this.setPagelist(locations)
           this.setBookAvailable(true)
           this.refreshLocation()
         });
     },
     onMaskClick(e){
+      if(this.mouseState && (this.mouseState === 2 || this.mouseState === 3)){
+        return
+      }
       const offsetX = e.offsetX
       const width = window.innerWidth
       if(e.offsetX > 0 && offsetX < width * 0.3){
@@ -202,6 +232,46 @@ export default {
     moveEnd(e){
       this.setOffsetY(0)
       this.firstOffsetY = null
+    },
+    //1-鼠标进入
+    //2-鼠标进入后的移动
+    //3-鼠标从移动状态松手
+    //4-鼠标还原
+    onMouseEnter(e){
+      this.mouseState = 1
+      e.stopPropagation()
+      e.preventDefault()
+      this.mouseStartTime = e.timeStamp
+    },
+    onMouseMove(e){
+      if(this.mouseState === 1){
+        this.mouseState = 2
+      }else if(this.mouseState === 2){
+        let offsetY = 0
+        if(this.firstOffsetY){
+          offsetY = e.clientY - this.firstOffsetY
+          this.setOffsetY(offsetY)
+        }else{
+          this.firstOffsetY = e.clientY
+        }
+      }
+      e.stopPropagation()
+      e.preventDefault()
+    },
+    onMouseEnd(e){
+      if(this.mouseState === 2){
+        this.setOffsetY(0)
+        this.firstOffsetY = null
+        this.mouseState = 3
+      } else if(this.mouseState === 3){
+        this.mouseState = 4
+      }
+      const time = e.timeStamp - this.mouseStartTime
+      if(time < 100){
+        this.mouseState = 4
+      }
+      e.stopPropagation()
+      e.preventDefault()
     }
   },
   mounted() {

@@ -1,6 +1,17 @@
-import { mapGetters, mapActions } from 'vuex'
-import { themeList, addClass, removeAll, getReadTimeByMinute } from './book.js'
-import { saveLocation, getBookmark } from './localStorage.js'
+import {
+  mapGetters,
+  mapActions
+} from 'vuex'
+import {
+  themeList,
+  addClass,
+  removeAll,
+  getReadTimeByMinute
+} from './book.js'
+import {
+  saveLocation,
+  getBookmark
+} from './localStorage.js'
 export const ebookMixin = {
   computed: {
     ...mapGetters([
@@ -88,6 +99,17 @@ export const ebookMixin = {
         } else {
           this.setIsBookmark(false)
         }
+        if (this.pagelist) {
+          const totalPage = this.pagelist.length
+          const currentPage = currentLocation.start.locations
+          if (currentPage && currentPage > 0) {
+            this.setPaginate(currentPage + ' / ' + totalPage)
+          } else {
+            this.setPaginate('')
+          }
+        } else {
+          this.setPaginate('')
+        }
       }
     },
     display (traget, cb) {
@@ -110,6 +132,32 @@ export const ebookMixin = {
     },
     getReadTimeText () {
       return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
+    }
+  }
+}
+
+export const storeHomeMixin = {
+  computed: {
+    ...mapGetters([
+      'offsetY',
+      'hotSearchOffsetY',
+      'flapCardVisible'
+    ])
+  },
+  methods: {
+    ...mapActions([
+      'setOffsetY',
+      'setHotSearchOffsetY',
+      'setFlapCardVisible'
+    ]),
+    showBookDetail (book) {
+      this.$router.push({
+        path: '/store/detail',
+        query: {
+          fileName: book.fileName,
+          category: book.categoryText
+        }
+      })
     }
   }
 }

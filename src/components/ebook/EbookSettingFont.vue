@@ -59,7 +59,7 @@ export default {
     position: absolute;
     bottom: px2rem(48);
     left: 0;
-    z-index: 101;
+    z-index: 151;
     width: 100%;
     height: px2rem(90);
     display: flex;

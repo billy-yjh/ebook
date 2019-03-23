@@ -1,5 +1,4 @@
 <template>
-
   <div class="ebook" ref="ebook">
     <ebook-header></ebook-header>
     <ebook-title></ebook-title>
