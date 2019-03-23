@@ -33,7 +33,7 @@ export default new Router({
           component: () => import('./views/store/StoreList.vue')
         },
         {
-          path: 'detal',
+          path: 'detail',
           component: () => import('./views/store/StoreDetail.vue')
         }
       ]
