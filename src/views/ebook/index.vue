@@ -17,8 +17,7 @@ import EbookMenu from '../../components/ebook/EbookMenu'
 import EbookBookmark from '../../components/ebook/EbookBookmark'
 import EbookHeader from '../../components/ebook/EbookHeader'
 import EbookFooter from '../../components/ebook/EbookFooter'
-import { getReadTime, saveReadTime } from '../../utils/localStorage';
-import { clearInterval, setTimeout } from 'timers';
+import { getReadTime, saveReadTime } from '../../utils/localStorage'
 import { ebookMixin } from '../../utils/mixin.js'
 
 export default {

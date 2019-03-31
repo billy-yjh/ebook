@@ -18,7 +18,12 @@
         <div class="search-bar-blank" :class="{'hide-title': !titleVisible}"></div>
         <div class="search-bar-input">
           <span class="icon-search icon"></span>
-          <input class="input" type="text" :placeholder="$t('home.hint')" v-model="searchText" @click="showHotSearch">
+          <input class="input" 
+                 type="text" 
+                 :placeholder="$t('home.hint')" 
+                 v-model="searchText" 
+                 @click="showHotSearch"
+                 @keyup.13.exact="search">
         </div>
       </div>
     </div>
@@ -70,7 +75,12 @@ export default {
       }else{
         this.hideShadow()
       }
-      this.hideHotSearch()
+      if(this.hotSearchVisible){
+        this.hideHotSearch()
+      } else {
+        this.$router.push('/store/shelf')
+      }
+      
     },
     showHotSearch(){
       this.hideTitle()
@@ -101,6 +111,14 @@ export default {
     },
     showShadow() {
       this.shadowVisible = true;
+    },
+    search(){
+      this.$router.push({
+        path: '/store/list',
+        query:{
+          keyword: this.searchText
+        }
+      })
     }
   }
 };

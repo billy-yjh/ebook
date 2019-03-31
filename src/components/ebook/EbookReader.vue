@@ -25,6 +25,7 @@ import {
   getLocation
 } from "../../utils/localStorage.js";
 import { flatten } from '../../utils/book.js'
+import { getLocalForage } from '../../utils/localForage.js';
 
 export default {
   mixins: [ebookMixin],
@@ -161,9 +162,7 @@ export default {
          this.setNavigation(navItem)
       })
     },
-    initEpub() {
-      const url =
-        process.env.VUE_APP_RES_URL + "/epub/" + this.fileName + ".epub";
+    initEpub(url) {
       this.book = new Epub(url);
       this.setCurrentBook(this.book);
       this.initRendition();
@@ -183,7 +182,7 @@ export default {
             const loc = item.match(/\[(.*)\]!/)[1]
             this.navigation.forEach(nav => {
               if(nav.href){
-                const href = nav.href.match(/^(.*)\.html$/)[1]
+                const href = nav.href.match(/^(.*)\.html$/)
                 if(href === loc){
                   nav.pagelist.push(item)
                 }
@@ -275,13 +274,28 @@ export default {
     }
   },
   mounted() {
-    /**
-     * $route.params.fileName* 获取路径*/
-    this.setFileName(this.$route.params.fileName.split("|").join("/")).then(
-      () => {
-        this.initEpub();
+    const books = this.$route.params.fileName.split("|")
+    const fileName = books[1]
+    // 把电子书的名传入数据库看能不能找到
+    getLocalForage(fileName,(err,blob) => {
+      if(!err && blob){
+        console.log('离线缓存')
+        this.setFileName(books.join('/')).then(() => {
+          this.initEpub(blob)
+        })
+      } else {
+        console.log('在线获取')
+        /**
+         * $route.params.fileName* 获取路径*/
+        this.setFileName(books.join('/')).then(
+          () => {
+            const url =process.env.VUE_APP_RES_URL + "/epub/" + this.fileName + ".epub";
+            this.initEpub(url);
+          }
+        );
       }
-    );
+    }) 
+    
   }
 };
 </script>
