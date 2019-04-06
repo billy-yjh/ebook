@@ -136,7 +136,6 @@ export default {
     },
     changeGroupName(){
       this.hidePopup()
-      setTimeout
       this.dialog({
         showNewGroup: true,
         groupName: this.shelfCategory.title

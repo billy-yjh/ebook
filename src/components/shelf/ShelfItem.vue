@@ -59,7 +59,6 @@ export default {
           gotoStoreHome(this)
         }
       }
-      
     }
   },
 }
